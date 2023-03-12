@@ -83,23 +83,23 @@ head(test)
   
   filtro <- is.na(test$surface_total) 
   sum(filtro)
-  test$surface_total[filtro] <- mean(test$surface_total, na.rm = T)
+  test$surface_total_imp[filtro] <- mean(test$surface_total, na.rm = T)
   
   filtro <- is.na(test$surface_covered) 
   sum(filtro)
-  test$surface_covered[filtro] <- mean(test$surface_covered, na.rm = T)
+  test$surface_covered_imp[filtro] <- mean(test$surface_covered, na.rm = T)
   
   filtro <- is.na(test$bedrooms) 
   sum(filtro)
-  test$bedrooms[filtro] <- mean(test$bedrooms, na.rm = T)
+  test$bedrooms_imp[filtro] <- mean(test$bedrooms, na.rm = T)
   
   filtro <- is.na(test$bathrooms) 
   sum(filtro)
-  test$bathrooms[filtro] <- mean(test$bathrooms, na.rm = T)
+  test$bathrooms_imp[filtro] <- mean(test$bathrooms, na.rm = T)
   
   filtro <- is.na(test$rooms)
   sum(filtro)
-  test$rooms[filtro] <- mean(test$rooms, na.rm = T)
+  test$rooms_imp[filtro] <- mean(test$rooms, na.rm = T)
   
   filtro <- is.na(test$lat) | is.na(test$lon) #| is.na(test$rooms) | is.na(test$bathrooms) #| is.na(test$surface_total) | is.na(test$surface_covered) 
   test <- test[!filtro, ] #Filtramos los registros sin lat y lon
