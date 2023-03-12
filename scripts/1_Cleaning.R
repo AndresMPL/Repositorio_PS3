@@ -205,6 +205,16 @@ leaflet() %>%
 #train_estrato <- train_estrato %>% select(-geometry) %>% as.data.frame()
 #write.csv(train_estrato, file = "train_estrato.csv")
 
+#pegado del estrato sobre la base 
+
+test_estrato   <- import("https://raw.githubusercontent.com/AndresMPL/Repositorio_PS3/main/datasets/test_estrato.csv")
+train_estrato  <- import("https://raw.githubusercontent.com/AndresMPL/Repositorio_PS3/main/datasets/train_estrato.csv")
+
+test_estrato <- distinct(test_estrato, property_id, .keep_all = TRUE)
+train_estrato <- distinct(train_estrato, property_id, .keep_all = TRUE)
+
+test <- left_join(test, test_estrato, by = "property_id")
+train <- left_join(train, train_estrato, by = "property_id")
 
 
 #Limpieza de la BD ----
