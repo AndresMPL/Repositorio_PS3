@@ -36,8 +36,6 @@
   #train <- train %>% select(-CMNOMLOCAL.y, -total_eventos_2022.y)
   #train <- train %>% rename(CMNOMLOCAL = CMNOMLOCAL.x, total_eventos_2022 = total_eventos_2022.x)
   
-  #estratos <- estratos %>% select(ESTRATO, geometry)
-  #train <- st_join(train, estratos, join = st_intersection, left = TRUE) #En cada inmueble agregamos el estrato de la manza en la cual se encuentra localidado
 
   #Datos descargados de Open Street Map
   
