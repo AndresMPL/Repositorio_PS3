@@ -173,7 +173,7 @@ leaflet() %>%
           opacity = 1) 
 
 
-#recuperacion del estrato de la vivienda (no correr se demora mucho, usar los archivos ya estraidos)
+#recuperacion del estrato de la vivienda (no correr se demora mucho, usar los archivos ya estraidos)-----
 
 #lote <- st_read("SHP") 
 #Estrato <- read.csv2("esoc.csv")
@@ -251,23 +251,23 @@ test <- test %>%
 
  filtro <- is.na(train$surface_total) 
  sum(filtro)
- train$surface_total[filtro] <- mean(train$surface_total, na.rm = T)
+ train$surface_total_imp[filtro] <- mean(train$surface_total, na.rm = T)
  
  filtro <- is.na(train$surface_covered) 
  sum(filtro)
- train$surface_covered[filtro] <- mean(train$surface_covered, na.rm = T)
+ train$surface_covered_imp[filtro] <- mean(train$surface_covered, na.rm = T)
  
  filtro <- is.na(train$bedrooms) 
  sum(filtro)
- train$bedrooms[filtro] <- mean(train$bedrooms, na.rm = T)
+ train$bedrooms_imp[filtro] <- mean(train$bedrooms, na.rm = T)
  
  filtro <- is.na(train$bathrooms) 
  sum(filtro)
- train$bathrooms[filtro] <- mean(train$bathrooms, na.rm = T)
+ train$bathrooms_imp[filtro] <- mean(train$bathrooms, na.rm = T)
  
  filtro <- is.na(train$rooms)
  sum(filtro)
- train$rooms[filtro] <- mean(train$rooms, na.rm = T)
+ train$rooms_imp[filtro] <- mean(train$rooms, na.rm = T)
 
  filtro <- is.na(train$lat) | is.na(train$lon) #| is.na(train$rooms) | is.na(train$bathrooms) #| is.na(train$surface_total) | is.na(train$surface_covered) 
  train <- train[!filtro, ] #Filtramos los registros sin lat y lon
