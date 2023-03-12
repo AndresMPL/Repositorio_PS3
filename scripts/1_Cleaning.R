@@ -47,15 +47,6 @@
  stargazer(round(est_prev), digits = 4, title="Tabla de Estadísticas descriptivas", type='text')
  sapply(train, function(x) sum(is.na(x))) %>% as.data.frame()  #Revisamos los NA de las variables
  
- #Buscamos informacion sobre si las propiedades tienen parqueaderos / garajes o no a partir de la descripción
- 
- library(tokenizers)
- train$parqueadero <- tokenize_words(train$description)
- descripcion_keep2 <- c("parqueadero?", "garaje?")
- train$parqueadero <- as.logical(grepl(paste(descripcion_keep2, collapse = "|"), train$parqueadero))
- train$parqueadero <- as.integer(as.logical(train$parqueadero))
- 
- 
  #Vamos a sacar los metros cuadrados a partir de la descripción de las propiedades
  p_load(tm, tidytext) 
  
@@ -105,14 +96,19 @@
  
  train2 <- train2 %>% rename(mts2=bigram)
  
+ #Buscamos informacion sobre si las propiedades tienen parqueaderos / garajes o no a partir de la descripción
  
- train_area <- train2 %>% select(property_id, mts2)
+ library(tokenizers)
+ train2$parqueadero <- tokenize_words(train2$description)
+ descripcion_keep2 <- c("parqueadero?", "garaje?")
+ train2$parqueadero <- as.logical(grepl(paste(descripcion_keep2, collapse = "|"), train2$parqueadero))
+ train2$parqueadero <- as.integer(as.logical(train2$parqueadero))
+ 
+ train_area <- train2 %>% select(property_id, mts2, parqueadero)
  
  train_area2 <- train_area %>% group_by(property_id) %>% slice(1)
  
  train <- left_join(train, train_area2)
- 
- train <- train %>% select(-c("descripcion"))
  
  #Verificamos que los datos no hayan cambiado
      est_prev <- train %>% select(price, surface_total, surface_covered, rooms, bedrooms, bathrooms) %>% as.data.frame()
@@ -175,6 +171,39 @@ leaflet() %>%
           addLegend("bottomright", labels = c("Apartamentos","Casas"), colors = c("#19AF00","#FFB900"),
           title = "Tipos de inmuebles",
           opacity = 1) 
+
+
+#recuperacion del estrato de la vivienda (no correr se demora mucho, usar los archivos ya estraidos)
+
+#lote <- st_read("SHP") 
+#Estrato <- read.csv2("esoc.csv")
+
+#lote <- lote %>% 
+ # mutate(LOTCODIGO = as.numeric(LOTCODIGO))
+
+#Estrato <- Estrato%>%
+#rename( LOTCODIGO = ESoCLote)
+
+#estr_geo <- inner_join( lote, Estrato, by = "LOTCODIGO")
+
+#estr_geo2 <- estr_geo %>%
+# select(ESoEstrato, geometry)
+
+#estr_geo2 <- st_make_valid(estr_geo2)
+#train_geo <- st_join(train, estr_geo2)
+
+#test_geo <- st_join(test, estr_geo2)
+
+
+#test_geo_2 <- unique(test_geo)
+#test_estrato <- test_geo_2 %>% select(property_id,ESoEstrato) %>% as.data.frame()
+#write.csv(test_estrato, file = "test_estrato.csv")
+
+#train_geo_2 <- unique(train_geo)
+#train_estrato <- train_geo_2 %>% select(property_id,ESoEstrato) %>% as.data.frame() 
+#write.csv(train_estrato, file = "train_estrato.csv")
+
+
 
 #Limpieza de la BD ----
  
@@ -239,7 +268,7 @@ leaflet() %>%
    as.data.frame() %>%
    mutate(V1 = scales::dollar(V1))
  
- estadisticas <- train %>% select(price, surface_total, surface_covered, rooms, bedrooms, bathrooms, parqueadero) %>% as.data.frame()
+ estadisticas <- train %>% select(price, surface_total, surface_covered, rooms, bedrooms, bathrooms) %>% as.data.frame()
  estadisticas <- estadisticas %>% select(-geometry) %>% as.data.frame()
  stargazer(round(estadisticas), digits = 2, title="Tabla de Estadísticas descriptivas", type='text')
  stargazer(round(estadisticas), digits = 2, title="Tabla de Estadísticas descriptivas", type='latex')
