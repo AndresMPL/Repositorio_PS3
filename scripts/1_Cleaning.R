@@ -172,6 +172,9 @@ leaflet() %>%
           title = "Tipos de inmuebles",
           opacity = 1) 
 
+
+
+
 #Limpieza de la BD ----
  
  sapply(train, function(x) sum(is.na(x))) %>% as.data.frame()  #Revisamos los NA de las variables
