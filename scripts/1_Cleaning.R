@@ -216,6 +216,24 @@ train_estrato <- distinct(train_estrato, property_id, .keep_all = TRUE)
 test <- left_join(test, test_estrato, by = "property_id")
 train <- left_join(train, train_estrato, by = "property_id")
 
+
+#expresamos en factores las variables categoricas
+
+train$property_type <- ifelse(train$property_type == "Casa", 1, 2) 
+train <- train %>% mutate(property_type=factor(property_type,levels=c(1,2),labels=c("Casa","Apartamento")))
+
+test$property_type <- ifelse(test$property_type == "Casa", 1, 2) 
+test <- test %>% mutate(property_type=factor(property_type,levels=c(1,2),labels=c("Casa","Apartamento")))
+
+
+train <- train %>% 
+  mutate(ESoEstrato=factor(ESoEstrato, levels=c(1,2,3,4,5,6), 
+                           labels= c("Estrato_1","Estrato_2", "Estrato_3", "Estrato_4", "Estrato_5", "Estrato_6"))) 
+test <- test %>% 
+  mutate(ESoEstrato=factor(ESoEstrato, levels=c(1,2,3,4,5,6), 
+                           labels= c("Estrato_1","Estrato_2", "Estrato_3", "Estrato_4", "Estrato_5", "Estrato_6"))) 
+
+
 #Limpieza de la BD ----
  
  sapply(train, function(x) (sum(is.na(x))/nrow(train))) %>% as.data.frame()  #Revisamos los NA de las variables
@@ -227,6 +245,9 @@ train <- left_join(train, train_estrato, by = "property_id")
   train$bedrooms_imp <- train$bedrooms
   train$bathrooms_imp <- train$bathrooms
   train$rooms_imp <- train$rooms
+  train$ESoEstrato_imp <- train$ESoEstrato
+  
+ 
 
  filtro <- is.na(train$surface_total) 
  sum(filtro)
