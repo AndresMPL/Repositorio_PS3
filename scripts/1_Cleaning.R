@@ -173,6 +173,36 @@ leaflet() %>%
           opacity = 1) 
 
 
+#recuperacion del estrato de la vivienda (no correr se demora mucho, usar los archivos ya estraidos)
+
+#lote <- st_read("SHP") 
+#Estrato <- read.csv2("esoc.csv")
+
+#lote <- lote %>% 
+ # mutate(LOTCODIGO = as.numeric(LOTCODIGO))
+
+#Estrato <- Estrato%>%
+#rename( LOTCODIGO = ESoCLote)
+
+#estr_geo <- inner_join( lote, Estrato, by = "LOTCODIGO")
+
+#estr_geo2 <- estr_geo %>%
+# select(ESoEstrato, geometry)
+
+#estr_geo2 <- st_make_valid(estr_geo2)
+#train_geo <- st_join(train, estr_geo2)
+
+#test_geo <- st_join(test, estr_geo2)
+
+
+#test_geo_2 <- unique(test_geo)
+#test_estrato <- test_geo_2 %>% select(property_id,ESoEstrato) %>% as.data.frame()
+#write.csv(test_estrato, file = "test_estrato.csv")
+
+#train_geo_2 <- unique(train_geo)
+#train_estrato <- train_geo_2 %>% select(property_id,ESoEstrato) %>% as.data.frame() 
+#write.csv(train_estrato, file = "train_estrato.csv")
+
 
 
 #Limpieza de la BD ----
