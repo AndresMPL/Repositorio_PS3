@@ -152,3 +152,4 @@ head(train_sf)
   stargazer(cor(round(estadisticas2, 4)), title="Tabla de Correlaciones", type='text')
   stargazer(cor(round(estadisticas2, 4)), title="Tabla de Correlaciones", type='latex')
   
+  
