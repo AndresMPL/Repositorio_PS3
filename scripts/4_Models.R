@@ -185,8 +185,7 @@
                   distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                   total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
                   I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
-                  I(distancia_ips*distancia_ese) + I(distancia_parque^2)+mts2+ I(mts2^2)+surface_total_imp+
-                  surface_covered_imp+bedrooms_imp+bathrooms_imp+rooms_imp,
+                  I(distancia_ips*distancia_ese) + I(distancia_parque^2) + rooms+bedrooms+bathrooms,
                 data = train_7, 
                 method = 'glmnet', 
                 trControl = fitControl,
@@ -213,8 +212,7 @@
                        distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                        total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
                        I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
-                       I(distancia_ips*distancia_ese) + I(distancia_parque^2)+mts2+surface_total_imp+
-                       surface_covered_imp+bedrooms_imp+bathrooms_imp+rooms_imp,
+                       I(distancia_ips*distancia_ese) + I(distancia_parque^2)+rooms+bedrooms+bathrooms,
                        data = train_7, 
                        method = "ranger", 
                        trControl = control_rf,
