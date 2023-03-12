@@ -100,49 +100,7 @@ head(test)
   filtro <- is.na(test$rooms)
   sum(filtro)
   test$rooms_imp[filtro] <- mean(test$rooms, na.rm = T)
-  
-##############################################################################
-  
-  filtro <- is.na(test$surface_total) 
-  test$surface_total[filtro] <- mean(test$surface_total, na.rm = T)
-  
-  filtro <- is.na(test$surface_covered) 
-  test$surface_covered[filtro] <- mean(test$surface_covered, na.rm = T)
-  
-  filtro <- is.na(test$bedrooms) 
-  test$bedrooms[filtro] <- mean(test$bedrooms, na.rm = T)
-  
-  filtro <- is.na(test$bathrooms) 
-  test$bathrooms[filtro] <- mean(test$bathrooms, na.rm = T)
-  
-  filtro <- is.na(test$rooms)
-  test$rooms[filtro] <- mean(test$rooms, na.rm = T)
-  
-#-----------------------------------------------------------------------------
-  
-  filtro <- is.na(test$surface_total_imp) 
-  test$surface_total_imp[filtro] <- mean(test$surface_total_imp, na.rm = T)
-  
-  filtro <- is.na(test$surface_covered_imp) 
-  test$surface_covered_imp[filtro] <- mean(test$surface_covered_imp, na.rm = T)
-  
-  filtro <- is.na(test$bedrooms_imp) 
-  test$bedrooms_imp[filtro] <- mean(test$bedrooms_imp, na.rm = T)
-  
-  filtro <- is.na(test$bathrooms_imp) 
-  test$bathrooms_imp[filtro] <- mean(test$bathrooms_imp, na.rm = T)
-  
-  filtro <- is.na(test$rooms_imp)
-  test$rooms_imp[filtro] <- mean(test$rooms_imp, na.rm = T)
-  
-  filtro <- is.na(test$mts2) 
-  test$mts2[filtro] <- mean(test$mts2, na.rm = T)
-  
-  filtro <- is.na(test$parqueadero)
-  test$parqueadero[filtro] <- mean(test$parqueadero, na.rm = T)
-  
-############################################################################## 
-  
+
   filtro <- is.na(test$lat) | is.na(test$lon) #| is.na(test$rooms) | is.na(test$bathrooms) #| is.na(test$surface_total) | is.na(test$surface_covered) 
   test <- test[!filtro, ] #Filtramos los registros sin lat y lon
   
