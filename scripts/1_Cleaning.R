@@ -197,10 +197,12 @@ leaflet() %>%
 
 #test_geo_2 <- unique(test_geo)
 #test_estrato <- test_geo_2 %>% select(property_id,ESoEstrato) %>% as.data.frame()
+#test_estrato <- test_estrato %>% select(-geometry) %>% as.data.frame()
 #write.csv(test_estrato, file = "test_estrato.csv")
 
 #train_geo_2 <- unique(train_geo)
 #train_estrato <- train_geo_2 %>% select(property_id,ESoEstrato) %>% as.data.frame() 
+#train_estrato <- train_estrato %>% select(-geometry) %>% as.data.frame()
 #write.csv(train_estrato, file = "train_estrato.csv")
 
 
