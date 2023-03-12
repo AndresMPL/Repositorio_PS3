@@ -216,10 +216,9 @@ train_estrato <- distinct(train_estrato, property_id, .keep_all = TRUE)
 test <- left_join(test, test_estrato, by = "property_id")
 train <- left_join(train, train_estrato, by = "property_id")
 
-
 #Limpieza de la BD ----
  
- sapply(train, function(x) sum(is.na(x))) %>% as.data.frame()  #Revisamos los NA de las variables
+ sapply(train, function(x) (sum(is.na(x))/nrow(train))) %>% as.data.frame()  #Revisamos los NA de las variables
    
   #Imputamos las variables surface_total, surfaced_covered, bedrooms, bathrooms, rooms y guardamos las originales por separado
  
