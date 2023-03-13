@@ -110,7 +110,7 @@ head(test)
   filtro <- filtro1 & filtro2
   test <- test[filtro,] 
   
-  test <- test %>% mutate(area_maxima = ifelse(surface_total>surface_covered, surface_total, surface_covered)) #Seleccionamos el área máxima
+  test <- test %>% mutate(area_maxima = ifelse(surface_total_imp>surface_covered_imp, surface_total_imp, surface_covered_imp)) #Seleccionamos el área máxima
 
 #Geografía----
   
