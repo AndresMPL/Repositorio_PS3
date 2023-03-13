@@ -278,7 +278,7 @@
   
   
   
-  # imputación de datos usando KNN --------
+  # imputación de datos  --------
   
   id_test <- test %>% 
     select(property_id) #extraer identificador para volver a dividir 
@@ -301,11 +301,33 @@
   
   total_base <- rbind(train_imp, test_imp) %>% as.data.frame()
   
+  #Imputación 
+  
+  filtro <- is.na(total_base$surface_total) 
+  sum(filtro)
+  total_base$surface_total_imp[filtro] <- mean(total_base$surface_total, na.rm = T)
+  
+  filtro <- is.na(total_base$surface_covered) 
+  sum(filtro)
+  total_base$surface_covered_imp[filtro] <- mean(total_base$surface_covered, na.rm = T)
+  
+  filtro <- is.na(total_base$bedrooms) 
+  sum(filtro)
+  total_base$bedrooms_imp[filtro] <- mean(total_base$bedrooms, na.rm = T)
+  
+  filtro <- is.na(total_base$bathrooms) 
+  sum(filtro)
+  total_base$bathrooms_imp[filtro] <- mean(total_base$bathrooms, na.rm = T)
+  
+  filtro <- is.na(total_base$rooms)
+  sum(filtro)
+  total_base$rooms_imp[filtro] <- mean(total_base$rooms, na.rm = T)
+  
   
   #estandarizacion  
   
-  variables_numericas <- c("surface_total", "surface_covered", "rooms",
-                           "bedrooms", "bathrooms", "mts2", 
+  variables_numericas <- c("surface_total_imp2", "surface_covered_imp", "rooms_imp",
+                           "bedrooms_imp", "bathrooms_imp",  
                            "total_eventos_2022", "distancia_parque",
                            "distancia_museo", "distancia_ips", "distancia_ese", "distancia_colegios", 
                            "distancia_cai", "distancia_best", "distancia_centrof", "distancia_cuadrantes", 
@@ -329,24 +351,16 @@
   
   total_base$CMNOMLOCAL <- factor(total_base$CMNOMLOCAL)
   
-  #imputar variables 
+  #dividir base en test y train nuevamente 
   
-  imputar <- c("surface_total", "surface_covered", "rooms",
-               "bedrooms", "bathrooms", "mts2", "total_eventos_2022", 
-               "distancia_parque","distancia_museo", "distancia_ips", 
-               "distancia_ese", "distancia_colegios", "distancia_cai", 
-               "distancia_best", "distancia_centrof", "distancia_cuadrantes", 
-               "distancia_buses", "distancia_tm", "property_type")
+  test_imp2<- total_base %>% filter(property_id==id_test)
   
-  p_load(VIM)
+  train_imp2 <- total_base %>% filter(property_id!=id_test)
   
-  datos_imp <- kNN(data = total_base[, imputar], k = 5)
-  
-  summary(datos_imp)
   
   #Particiones nuevas Train-Test----
   
-   set.seed(1011)
+  set.seed(1011)
   
   inTrain <- createDataPartition(y = train_imp2$price, p = .7, list = FALSE)
   
@@ -355,8 +369,8 @@
   
   ##Regresion nueva 1----
   reg1_nw <- lm(price~distancia_parque+distancia_museo+distancia_ips+distancia_ese +distancia_colegios+distancia_cai+ 
-               distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
-               total_eventos_2022  + ESoEstrato + CMNOMLOCAL, data = train_nw)
+                  distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                  total_eventos_2022 + CMNOMLOCAL, data = train_nw)
   
   stargazer(reg1_nw, type = "text", dep.var.labels = "Precio de venta", digits = 4)
   summary(reg1_nw)
@@ -367,10 +381,10 @@
   
   
   ##Regresion nueva 2----
-  reg2_nw <- lm(price~surface_total+surface_covered+rooms+bedrooms+bathrooms+property_type+
-               distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
-               distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
-               total_eventos_2022 + ESoEstrato + CMNOMLOCAL, data = train_nw)
+  reg2_nw <- lm(price~surface_total_imp+surface_covered_imp+rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
+                  distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
+                  distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                  total_eventos_2022 +  CMNOMLOCAL, data = train_nw)
   
   stargazer(reg2_nw, type = "text", dep.var.labels = "Precio de venta", digits = 4)
   summary(reg2_nw)
@@ -385,14 +399,14 @@
   fitControl <- trainControl(method = "cv", number = 10)
   
   ##EN1 nuevos----
-  EN_nw <-  train(price~rooms+bedrooms+bathrooms+property_type+distancia_parque+distancia_museo+
-                 distancia_ips+distancia_ese+distancia_colegios+
-                 distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
-                 total_eventos_2022 + ESoEstrato + CMNOMLOCAL, data = train_nw, 
-               method = 'glmnet', 
-               trControl = fitControl,
-               tuneGrid = expand.grid(alpha = 0.5,lambda = seq(0.001,0.02,by = 0.001)),
-               preProcess = NULL) 
+  EN_nw <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+distancia_parque+distancia_museo+
+                    distancia_ips+distancia_ese+distancia_colegios+
+                    distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                    total_eventos_2022 + CMNOMLOCAL, data = train_nw, 
+                  method = 'glmnet', 
+                  trControl = fitControl,
+                  tuneGrid = expand.grid(alpha = 0.5,lambda = seq(0.001,0.02,by = 0.001)),
+                  preProcess = NULL) 
   
   coef_EN_nw <- coef(EN_nw$finalModel, EN_nw$bestTune$lambda)
   coef_EN_nw
@@ -403,17 +417,17 @@
   
   ##EN2----
   set.seed(10101)
-  EN2_nw <-  train(price~rooms+bedrooms+bathrooms+property_type+
-                  distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
-                  distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
-                  total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
-                  I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
-                  I(distancia_ips*distancia_ese) + I(distancia_parque^2),
-                data = train_nw, 
-                method = 'glmnet', 
-                trControl = fitControl,
-                tuneGrid = expand.grid(alpha = seq(0,1,by = 0.1),lambda = seq(0.001,0.02,by = 0.001)),
-                preProcess = NULL) 
+  EN2_nw <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
+                     distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
+                     distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                     total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
+                     I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
+                     I(distancia_ips*distancia_ese) + I(distancia_parque^2)+ CMNOMLOCAL,
+                   data = train_nw, 
+                   method = 'glmnet', 
+                   trControl = fitControl,
+                   tuneGrid = expand.grid(alpha = seq(0,1,by = 0.1),lambda = seq(0.001,0.02,by = 0.001)),
+                   preProcess = NULL) 
   
   coef_EN2_nw <- coef(EN2_nw$finalModel , EN2_nw$bestTune$lambda)
   coef_EN2_nw
@@ -425,26 +439,26 @@
   #Random forest2----------------------------------------------------------
   
   tunegrid_rf_nw <- expand.grid(mtry = c(3, 5, 10), 
-                             min.node.size = c(10, 30, 50, 70, 100),
-                             splitrule = "variance")
+                                min.node.size = c(10, 30, 50, 70, 100),
+                                splitrule = "variance")
   
   control_rf_nw <- trainControl(method = "cv", number = 10)
   
   modelo_rf2_nw <- train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
-                        distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
-                        distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
-                        total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
-                        I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
-                        I(distancia_ips*distancia_ese) + I(distancia_parque^2),
-                      data = train_nw, 
-                      method = "ranger", 
-                      trControl = control_rf_nw,
-                      metric = 'RMSE', 
-                      tuneGrid = tunegrid_rf_nw)
+                           distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
+                           distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                           total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
+                           I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
+                           I(distancia_ips*distancia_ese) + I(distancia_parque^2) + CMNOMLOCAL,
+                         data = train_nw, 
+                         method = "ranger", 
+                         trControl = control_rf_nw,
+                         metric = 'RMSE', 
+                         tuneGrid = tunegrid_rf_nw)
   
   Grilla_12_nw <- ggplot(modelo_rf2_nw$results, 
-                      aes(x = min.node.size, y = RMSE, 
-                          color = as.factor(mtry))) +
+                         aes(x = min.node.size, y = RMSE, 
+                             color = as.factor(mtry))) +
     geom_line() +
     geom_point() +
     labs(title = "Resultados del grid search",
@@ -453,12 +467,53 @@
     scale_color_discrete("Número de predictores seleccionados al azar") +
     theme_bw() +
     theme(legend.position = "bottom")
-    
+  
   
   Grilla_12_nw
   
   test_nw$y_hat10 <- predict(modelo_rf2_nw, newdata = test_nw)
   MAE_model10_nw <- with(test_nw, mean(abs(price - y_hat10))) #Calculating the MSE
   MAE_model10_nw
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  imputar <- c("surface_total", "surface_covered", "rooms",
+               "bedrooms", "bathrooms", "mts2", "total_eventos_2022", 
+               "distancia_parque","distancia_museo", "distancia_ips", 
+               "distancia_ese", "distancia_colegios", "distancia_cai", 
+               "distancia_best", "distancia_centrof", "distancia_cuadrantes", 
+               "distancia_buses", "distancia_tm", "property_type")
+  
+  p_load(VIM)
+  
+  datos_imp <- kNN(data = total_base[, imputar], k = 5)
+  
+  summary(datos_imp)
   
   
