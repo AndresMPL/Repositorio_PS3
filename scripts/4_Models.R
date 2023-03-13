@@ -302,7 +302,7 @@
   total_base <- rbind(train_imp, test_imp) %>% as.data.frame()
   
   
-  #estandarizacion y definicion de variables categoricas como factores 
+  #estandarizacion  
   
   variables_numericas <- c("surface_total", "surface_covered", "rooms",
                            "bedrooms", "bathrooms", "mts2", 
@@ -316,6 +316,50 @@
   
   total_base[, variables_numericas] <- predict(escalador, total_base[, variables_numericas])
   
+  #definicion de variables categoricas como factores
   
-  imputar <- c("rooms", "bedrooms", "bathrooms", "property_type", "mts2", "parqueadero", "ESoEstrato")
+  total_base$property_type <- ifelse(total_base$property_type == "Casa", 1, 2) 
+  total_base <- total_base %>% mutate(property_type=factor(property_type,levels=c(1,2),labels=c("Casa","Apartamento")))
   
+  
+  total_base <- total_base %>% 
+    mutate(ESoEstrato=factor(ESoEstrato, levels=c(1,2,3,4,5,6), 
+                             labels= c("Estrato_1","Estrato_2", "Estrato_3", "Estrato_4", "Estrato_5", "Estrato_6"))) 
+  
+  
+  total_base$CMNOMLOCAL <- factor(total_base$CMNOMLOCAL)
+  
+  #imputar variables 
+  
+  imputar <- c("surface_total", "surface_covered", "rooms",
+               "bedrooms", "bathrooms", "mts2", "total_eventos_2022", 
+               "distancia_parque","distancia_museo", "distancia_ips", 
+               "distancia_ese", "distancia_colegios", "distancia_cai", 
+               "distancia_best", "distancia_centrof", "distancia_cuadrantes", 
+               "distancia_buses", "distancia_tm", "property_type", "ESoEstrato", 
+               "CMNOMLOCAL")
+  
+  p_load(VIM)
+  
+  #numero de Ks
+  
+  ks <- 1:20
+    
+  # Crear una matriz vacía para almacenar los resultados de la imputación
+  
+  datos_imputados <- matrix(NA, nrow = nrow(total_base), ncol = length(imputar))
+  
+  # Realizar la imputación para cada valor de K y almacenar los resultados
+  
+  for (k in ks) {
+    datos_imputados_temp <- kNN(total_base[, imputar], k = k, variable = imputar)
+    datos_imputados[, colnames(datos_imputados_temp)] <- datos_imputados_temp
+  }
+  
+  # Elegir el valor de K que minimiza el error de imputación
+  
+  errores <- apply(datos_imputados, 2, function(x) sum(!is.na(x) & x != total_base[, colnames(datos_imputados) == colnames(x)]) / sum(!is.na(total_base[, colnames(datos_imputados) == colnames(x)])))
+  k_optimo <- ks[which.min(errores)]
+
+  datos_imp <- kNN(data = total_base[, imputar], k = 5)
+    
