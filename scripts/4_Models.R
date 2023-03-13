@@ -278,7 +278,34 @@
   
   
   
-  # imputación de datos usando KNN 
+  # imputación de datos usando KNN --------
+  
+  id_test <- test %>% 
+    select(property_id) #extraer identificador para volver a dividir 
+  
+  #variables a usar (se usa la base despues de aplicarle las modificaciones del script 5_prediction)
+  
+  test_imp <- test %>% select(property_id, price, surface_total, surface_covered, 
+                              rooms, bedrooms, bathrooms, property_type, ESoEstrato, 
+                              mts2, total_eventos_2022, CMNOMLOCAL, distancia_parque,
+                              distancia_museo, distancia_ips, distancia_ese, distancia_colegios, 
+                              distancia_cai, distancia_best, distancia_centrof, distancia_cuadrantes, 
+                              distancia_buses, distancia_tm)
+  
+  train_imp <- train %>% select(property_id, price, surface_total, surface_covered, 
+                              rooms, bedrooms, bathrooms, property_type, ESoEstrato, 
+                              mts2, total_eventos_2022, CMNOMLOCAL, distancia_parque,
+                              distancia_museo, distancia_ips, distancia_ese, distancia_colegios, 
+                              distancia_cai, distancia_best, distancia_centrof, distancia_cuadrantes, 
+                              distancia_buses, distancia_tm)
+  
+  total_base <- rbind(train_imp, test_imp)
+  
+  
+  #estandarizacion y definicion de variables categoricas como factores 
+  
+  
+  
   
   imputar <- c("rooms", "bedrooms", "bathrooms", "property_type", "mts2", "parqueadero", "ESoEstrato")
   
