@@ -299,12 +299,22 @@
                               distancia_cai, distancia_best, distancia_centrof, distancia_cuadrantes, 
                               distancia_buses, distancia_tm)
   
-  total_base <- rbind(train_imp, test_imp)
+  total_base <- rbind(train_imp, test_imp) %>% as.data.frame()
   
   
   #estandarizacion y definicion de variables categoricas como factores 
   
+  variables_numericas <- c("surface_total", "surface_covered", "rooms",
+                           "bedrooms", "bathrooms", "mts2", 
+                           "total_eventos_2022", "distancia_parque",
+                           "distancia_museo", "distancia_ips", "distancia_ese", "distancia_colegios", 
+                           "distancia_cai", "distancia_best", "distancia_centrof", "distancia_cuadrantes", 
+                           "distancia_buses", "distancia_tm")
   
+  escalador <- preProcess(total_base[, variables_numericas],
+                          method = c("center", "scale"), na.remove = TRUE)
+  
+  total_base[, variables_numericas] <- predict(escalador, total_base[, variables_numericas])
   
   
   imputar <- c("rooms", "bedrooms", "bathrooms", "property_type", "mts2", "parqueadero", "ESoEstrato")
