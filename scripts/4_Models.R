@@ -34,7 +34,7 @@
   
   
   ##Regresion 2----
-  reg2 <- lm(price~surface_total+surface_covered+rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  reg2 <- lm(price~surface_total_imp+surface_covered_imp+rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
              distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
              distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
              total_eventos_2022, data = train_7)
@@ -46,7 +46,7 @@
   MAE_model2 <- with(test_3, mean(abs(price - y_hat2))) #Calculating the MSE
   MAE_model2
 
-  reg21 <- lm(price~surface_total+surface_covered+rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  reg21 <- lm(price~surface_total_imp+surface_covered_imp+rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                total_eventos_2022+I(total_eventos_2022^2)+I(distancia_cai^2)+I(distancia_colegios^2), data = train_7)
@@ -60,7 +60,7 @@
   
   
   ##Regresion 3----
-  reg22 <- lm(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  reg22 <- lm(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                 distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                 distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                 total_eventos_2022+I(total_eventos_2022^2)+I(distancia_cai^2)+I(distancia_colegios^2), data = train_7)
@@ -79,7 +79,7 @@
   fitControl <- trainControl(method = "cv", number = 10)
 
   ##EN1----
-  EN <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+distancia_parque+distancia_museo+
+  EN <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+distancia_parque+distancia_museo+
                  distancia_ips+distancia_ese+distancia_colegios+
                  distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                  total_eventos_2022+I(total_eventos_2022^2)+
@@ -100,7 +100,7 @@
   ##EN2----
   
   set.seed(10101)
-  EN2 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  EN2 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                   distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                   distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                   total_eventos_2022+I(total_eventos_2022^2), data = train_7, 
@@ -118,7 +118,7 @@
   
   ##EN3----
   set.seed(10101)
-  EN3 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  EN3 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                   distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                   distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                   total_eventos_2022+I(total_eventos_2022^2)+ I(distancia_cai^2)+(distancia_colegios^2), data = train_7, 
@@ -137,7 +137,7 @@
   
   ##EN4----
   set.seed(10101)
-  EN4 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  EN4 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                   distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                   distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                   total_eventos_2022+I(total_eventos_2022^2)+ I(distancia_cai^2)+I(distancia_colegios^2), data = train_7, 
@@ -159,7 +159,7 @@
   
   ##EN5----
   set.seed(10101)
-  EN5 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  EN5 <-  train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                   distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                   distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                   total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
@@ -180,7 +180,7 @@
   
   ##EN6----
   set.seed(10101)
-  EN6 <-  train(price~property_type+area_maxima+
+  EN6 <-  train(price~property_type+
                   distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                   distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                   total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
@@ -207,12 +207,12 @@
   
   control_rf <- trainControl(method = "cv", number = 10)
   
-  modelo_rf <- train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  modelo_rf <- train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                        distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                        distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                        total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
                        I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
-                       I(distancia_ips*distancia_ese) + I(distancia_parque^2)+rooms+bedrooms+bathrooms,
+                       I(distancia_ips*distancia_ese) + I(distancia_parque^2),
                        data = train_7, 
                        method = "ranger", 
                        trControl = control_rf,
@@ -246,7 +246,7 @@
   
   control_rf <- trainControl(method = "cv", number = 10)
   
-  modelo_rf2 <- train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+area_maxima+
+  modelo_rf2 <- train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
                        distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
                        distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                        total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
