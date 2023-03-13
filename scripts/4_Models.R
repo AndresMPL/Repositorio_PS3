@@ -83,7 +83,7 @@
                  distancia_ips+distancia_ese+distancia_colegios+
                  distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
                  total_eventos_2022+I(total_eventos_2022^2)+
-                 (distancia_colegios^2), data = train_7, 
+                 I(distancia_colegios^2), data = train_7, 
                  method = 'glmnet', 
                  trControl = fitControl,
                  tuneGrid = expand.grid(alpha = 0.5,lambda = seq(0.001,0.02,by = 0.001)),
@@ -343,7 +343,7 @@
   
   #numero de Ks
   
-  ks <- 1:20
+  ks <- 1:5
     
   # Crear una matriz vacía para almacenar los resultados de la imputación
   
@@ -352,7 +352,7 @@
   # Realizar la imputación para cada valor de K y almacenar los resultados
   
   for (k in ks) {
-    datos_imputados_temp <- kNN(total_base[, imputar], k = k, variable = imputar)
+    datos_imputados_temp <- kNN(total_base[, imputar], k = k)
     datos_imputados[, colnames(datos_imputados_temp)] <- datos_imputados_temp
   }
   
@@ -362,4 +362,123 @@
   k_optimo <- ks[which.min(errores)]
 
   datos_imp <- kNN(data = total_base[, imputar], k = 5)
+  
+  
+  #Particiones nuevas Train-Test----
+  
+   set.seed(1011)
+  
+  inTrain <- createDataPartition(y = train_imp2$price, p = .7, list = FALSE)
+  
+  train_nw <- train[ inTrain,]
+  test_nw  <- train[-inTrain,]
+  
+  ##Regresion nueva 1----
+  reg1_nw <- lm(price~distancia_parque+distancia_museo+distancia_ips+distancia_ese +distancia_colegios+distancia_cai+ 
+               distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+               total_eventos_2022  + ESoEstrato + CMNOMLOCAL, data = train_nw)
+  
+  stargazer(reg1_nw, type = "text", dep.var.labels = "Precio de venta", digits = 4)
+  summary(reg1_nw)
+  
+  test_nw$y_hat1 <- predict(reg1_nw, newdata = test_nw)
+  MAE_model1_nw <- with(test_nw, mean(abs(price - y_hat1))) #Calculating the MAE
+  MAE_model1_nw
+  
+  
+  ##Regresion nueva 2----
+  reg2_nw <- lm(price~surface_total+surface_covered+rooms+bedrooms+bathrooms+property_type+
+               distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
+               distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+               total_eventos_2022 + ESoEstrato + CMNOMLOCAL, data = train_nw)
+  
+  stargazer(reg2_nw, type = "text", dep.var.labels = "Precio de venta", digits = 4)
+  summary(reg2_nw)
+  
+  test_nw$y_hat2 <- predict(reg2_nw, newdata = test_nw)
+  MAE_model2_nw <- with(test_nw, mean(abs(price - y_hat2))) #Calculating the MSE
+  MAE_model2_nw
+  
+  #Elastic Net nuevos ----
+  
+  set.seed(10101)
+  fitControl <- trainControl(method = "cv", number = 10)
+  
+  ##EN1 nuevos----
+  EN_nw <-  train(price~rooms+bedrooms+bathrooms+property_type+distancia_parque+distancia_museo+
+                 distancia_ips+distancia_ese+distancia_colegios+
+                 distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                 total_eventos_2022 + ESoEstrato + CMNOMLOCAL, data = train_nw, 
+               method = 'glmnet', 
+               trControl = fitControl,
+               tuneGrid = expand.grid(alpha = 0.5,lambda = seq(0.001,0.02,by = 0.001)),
+               preProcess = NULL) 
+  
+  coef_EN_nw <- coef(EN_nw$finalModel, EN_nw$bestTune$lambda)
+  coef_EN_nw
+  
+  test_nw$y_hat3 <- predict(EN_nw, newdata = test_nw)
+  MAE_model3_nw <- with(test_nw, mean(abs(price - y_hat3))) #Calculating the MSE
+  MAE_model3_nw
+  
+  ##EN2----
+  set.seed(10101)
+  EN2_nw <-  train(price~rooms+bedrooms+bathrooms+property_type+
+                  distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
+                  distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                  total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
+                  I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
+                  I(distancia_ips*distancia_ese) + I(distancia_parque^2),
+                data = train_nw, 
+                method = 'glmnet', 
+                trControl = fitControl,
+                tuneGrid = expand.grid(alpha = seq(0,1,by = 0.1),lambda = seq(0.001,0.02,by = 0.001)),
+                preProcess = NULL) 
+  
+  coef_EN2_nw <- coef(EN2_nw$finalModel , EN2_nw$bestTune$lambda)
+  coef_EN2_nw
+  
+  test_nw$y_hat7 <- predict(EN2_nw, newdata = test_nw)
+  MAE_model7_nw <- with(test_nw, mean(abs(price - y_hat7))) #Calculating the MSE
+  MAE_model7_nw
+  
+  #Random forest2----------------------------------------------------------
+  
+  tunegrid_rf_nw <- expand.grid(mtry = c(3, 5, 10), 
+                             min.node.size = c(10, 30, 50, 70, 100),
+                             splitrule = "variance")
+  
+  control_rf_nw <- trainControl(method = "cv", number = 10)
+  
+  modelo_rf2_nw <- train(price~rooms_imp+bedrooms_imp+bathrooms_imp+property_type+
+                        distancia_parque+distancia_museo+distancia_ips+distancia_ese+distancia_colegios+distancia_cai+
+                        distancia_best+distancia_centrof+distancia_cuadrantes+distancia_buses+distancia_tm+
+                        total_eventos_2022+I(total_eventos_2022^2)+I(total_eventos_2022^3) + I(distancia_cai^2)+I(distancia_colegios^2)+
+                        I(distancia_parque*distancia_buses) + I(total_eventos_2022*distancia_cai) + I(distancia_tm*distancia_buses)+
+                        I(distancia_ips*distancia_ese) + I(distancia_parque^2),
+                      data = train_nw, 
+                      method = "ranger", 
+                      trControl = control_nw,
+                      metric = 'RMSE', 
+                      tuneGrid = tunegrid_nw)
+  
+  Grilla_12_nw <- ggplot(modelo_rf2_nw$results, 
+                      aes(x = min.node.size, y = RMSE, 
+                          color = as.factor(mtry))) +
+    geom_line() +
+    geom_point() +
+    labs(title = "Resultados del grid search",
+         x = "Mínima cantidad de observaciones por hoja",
+         y = "RMSE (Cross-Validation)") +
+    scale_color_discrete("Número de predictores seleccionados al azar") +
+    theme_bw() +
+    theme(legend.position = "bottom")
     
+  
+  Grilla_12_nw
+  
+  test_nw$y_hat10 <- predict(modelo_rf2_nw, newdata = test_nw)
+  MAE_model10_nw <- with(test_nw, mean(abs(price - y_hat10))) #Calculating the MSE
+  MAE_model10_nw
+  
+  
