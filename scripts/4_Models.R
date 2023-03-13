@@ -336,33 +336,13 @@
                "distancia_parque","distancia_museo", "distancia_ips", 
                "distancia_ese", "distancia_colegios", "distancia_cai", 
                "distancia_best", "distancia_centrof", "distancia_cuadrantes", 
-               "distancia_buses", "distancia_tm", "property_type", "ESoEstrato", 
-               "CMNOMLOCAL")
+               "distancia_buses", "distancia_tm", "property_type")
   
   p_load(VIM)
   
-  #numero de Ks
-  
-  ks <- 1:5
-    
-  # Crear una matriz vacía para almacenar los resultados de la imputación
-  
-  datos_imputados <- matrix(NA, nrow = nrow(total_base), ncol = length(imputar))
-  
-  # Realizar la imputación para cada valor de K y almacenar los resultados
-  
-  for (k in ks) {
-    datos_imputados_temp <- kNN(total_base[, imputar], k = k)
-    datos_imputados[, colnames(datos_imputados_temp)] <- datos_imputados_temp
-  }
-  
-  # Elegir el valor de K que minimiza el error de imputación
-  
-  errores <- apply(datos_imputados, 2, function(x) sum(!is.na(x) & x != total_base[, colnames(datos_imputados) == colnames(x)]) / sum(!is.na(total_base[, colnames(datos_imputados) == colnames(x)])))
-  k_optimo <- ks[which.min(errores)]
-
   datos_imp <- kNN(data = total_base[, imputar], k = 5)
   
+  summary(datos_imp)
   
   #Particiones nuevas Train-Test----
   
@@ -458,9 +438,9 @@
                         I(distancia_ips*distancia_ese) + I(distancia_parque^2),
                       data = train_nw, 
                       method = "ranger", 
-                      trControl = control_nw,
+                      trControl = control_rf_nw,
                       metric = 'RMSE', 
-                      tuneGrid = tunegrid_nw)
+                      tuneGrid = tunegrid_rf_nw)
   
   Grilla_12_nw <- ggplot(modelo_rf2_nw$results, 
                       aes(x = min.node.size, y = RMSE, 
