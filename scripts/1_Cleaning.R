@@ -278,7 +278,7 @@ test <- test %>%
  filtro <- filtro1 & filtro2
  train <- train[filtro,] 
  
- train <- train %>% mutate(area_maxima = ifelse(surface_total>surface_covered, surface_total, surface_covered)) #Seleccionamos el área máxima
+ train <- train %>% mutate(area_maxima = ifelse(surface_total_imp>surface_covered_imp, surface_total_imp, surface_covered_imp)) #Seleccionamos el área máxima
  
  sapply(train, function(x) sum(is.na(x))) %>% as.data.frame() #Revisamos los NA de las variables
  
